@@ -1,74 +1,69 @@
 const readline = require("readline");
 const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
+  input: process.stdin,
+  output: process.stdout,
 });
 //1.  컴퓨터가 뽑는 임의의 1~9 랜덤 숫자 함수입니다
 function randomNum() {
-    let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    let comNumbers = [];
-    for (let i = 0; i < 3; i++) {
-        let getPosition = Math.floor(Math.random() * numbers.length);
-        let getNumber = numbers[getPosition];
-        comNumbers.push(getNumber);
-        numbers.splice(getPosition, 1);
-    }
-    console.log("\n컴퓨터가 숫자를 뽑았습니다." + comNumbers);
-    return comNumbers;
+  let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let comNumbers = [];
+  for (let i = 0; i < 3; i++) {
+    let getPosition = Math.floor(Math.random() * numbers.length);
+    let getNumber = numbers[getPosition];
+    comNumbers.push(getNumber);
+    numbers.splice(getPosition, 1);
+  }
+  console.log("\n컴퓨터가 숫자를 뽑았습니다." + comNumbers);
+  return comNumbers;
 }
 
 //2.  유저 입력값 받는 함수
 function userInput() {
-    return new Promise((resolve) => {
-        rl.question("3자리 숫자 입력 : ", (answer) => {
-            if (answer.length !== 3) {
-                console.log("숫자는 3자리 숫자로 입력해주세요.\n");
-                resolve(userInput());
-            } else {
-                resolve(Number(answer));
-            }
-        });
+  return new Promise((resolve) => {
+    rl.question("3자리 숫자 입력 : ", (answer) => {
+      if (answer.length !== 3) {
+        console.log("숫자는 3자리 숫자로 입력해주세요.\n");
+        resolve(userInput());
+      } else {
+        resolve(Number(answer));
+      }
     });
+  });
 }
 //3.  컴퓨터 랜덤숫자, 유저 숫자 비교 함수
 function compareScore(randomNum, userInput) {
-    const userNum = String(userInput).split("").map(Number);
-    console.log(randomNum, userNum);
-    let strike = 0;
-    let ball = 0;
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            if (userNum[i] == randomNum[j] && i == j) {
-                strike++;
-            } else if (userNum[i] == randomNum[j]) {
-                ball++;
-            }
-        }
+  const userNum = String(userInput).split("").map(Number);
+  console.log(randomNum, userNum);
+  let strike = 0;
+  let ball = 0;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (userNum[i] == randomNum[j] && i == j) {
+        strike++;
+      } else if (userNum[i] == randomNum[j]) {
+        ball++;
+      }
     }
-    let result = [strike, ball];
-    return result; // 결과 문구 return
+  }
+  let result = [strike, ball];
+  return result; // 결과 문구 return
 }
 
 //4. 결과 문구 출력 함수든, 로직
 function printResult(result) {
-    const strike = result[0];
-    const ball = result[1];
+  const strike = result[0];
+  const ball = result[1];
 
-    if (strike == 0 && ball == 0) {
-        return "Nothing";
-    } else if (strike == 3) {
-        const allStrike = "3 스트라이크 : 정답입니다!!";
-        return allStrike;
-    } else {
-        const message = strike + " 스트라이크 " + ball + " 볼";
-        return message;
-    }
+  if (strike == 0 && ball == 0) {
+    return "Nothing";
+  } else if (strike == 3) {
+    const allStrike = "3 스트라이크 : 정답입니다!!";
+    return allStrike;
+  } else {
+    const message = strike + " 스트라이크 " + ball + " 볼";
+    return message;
+  }
 }
-
-// 함수
-// console.log(gameId + "번 게임 결과");
-// console.log(" 숫자를 입력해주세요 :" + userInput())
-// printResult(message)
 
 let gameId = 0; // 전체 게임 돌아가는 횟수 시작부터 끝까지
 let count = 0; // 시도 횟수
@@ -77,92 +72,151 @@ let gameHistory = [];
 
 // 5. 게임 동작 함수
 async function playGame() {
-    gameId++;
-    console.log(gameId + " 번째 게임 ");
-    const comRandomNum = randomNum();
+  gameId++;
+  console.log(gameId + " 번째 게임 ");
+  const comRandomNum = randomNum();
 
-    const gameStart = new Date();
-    const gameStartTime =
-        gameStart.getFullYear() +
-        "." +
-        (gameStart.getMonth() + 1) +
-        "." +
-        gameStart.getDate() +
-        " " +
-        gameStart.getHours() +
-        "시 " +
-        gameStart.getMinutes() +
-        "분 " +
-        gameStart.getSeconds() + "초";
+  const gameStart = new Date();
+  const gameStartTime =
+    gameStart.getFullYear() +
+    "." +
+    (gameStart.getMonth() + 1) +
+    "." +
+    gameStart.getDate() +
+    " " +
+    gameStart.getHours() +
+    "시 " +
+    gameStart.getMinutes() +
+    "분 " +
+    gameStart.getSeconds() +
+    "초";
 
+  while (true) {
+    count++;
+    console.log(`--- ${count}번째 시도 ---`);
 
-    while (true) {
-        count++;
-        console.log(`--- ${count}번째 시도 ---`);
+    const userInputNum = await userInput();
+    const resultScore = compareScore(comRandomNum, userInputNum);
 
-        const userInputNum = await userInput();
-        const resultScore = compareScore(comRandomNum, userInputNum);
+    gameHistory.push("3자리 숫자 입력 : " + userInputNum);
+    gameHistory.push(printResult(resultScore));
 
-        gameHistory.push("3자리 숫자 입력 : " + userInputNum);
-        gameHistory.push(printResult(resultScore));
-
-
-        if (printResult(resultScore) == "3 스트라이크 : 정답입니다!!") {
-            console.log(printResult(resultScore) + "\n");
-            break;
-        } else {
-            console.log(printResult(resultScore) + "\n");
-            continue;
-        }
+    if (printResult(resultScore) == "3 스트라이크 : 정답입니다!!") {
+      console.log(printResult(resultScore) + "\n");
+      break;
+    } else {
+      console.log(printResult(resultScore) + "\n");
+      continue;
     }
+  }
 
-    const gameEnd = new Date();
-    const gameEndTime =
-        gameEnd.getFullYear() +
-        "." +
-        (gameEnd.getMonth() + 1) +
-        "." +
-        gameEnd.getDate() +
-        " " +
-        gameEnd.getHours() +
-        "시 " +
-        gameEnd.getMinutes() +
-        "분 " +
-        gameEnd.getSeconds() + "초";
+  const gameEnd = new Date();
+  const gameEndTime =
+    gameEnd.getFullYear() +
+    "." +
+    (gameEnd.getMonth() + 1) +
+    "." +
+    gameEnd.getDate() +
+    " " +
+    gameEnd.getHours() +
+    "시 " +
+    gameEnd.getMinutes() +
+    "분 " +
+    gameEnd.getSeconds() +
+    "초";
 
-    console.log(gameStartTime);
-    console.log(gameEndTime);
+  gameRecord.push({
+    gameNumber: gameId,
+    startTime: gameStartTime,
+    endTime: gameEndTime,
+    counts: count,
+    history: gameHistory,
+  });
 
-    gameRecord.push({
-        gameNumber: gameId,
-        startTime: gameStartTime,
-        endTime: gameEndTime,
-        counts : count,
-        history : gameHistory
-    })
+  console.log("3개의 숫자를 모두 맞히셨습니다.");
+  console.log("-------게임 종료-------\n");
+  count = 0;
+  gameHistory = [];
+}
 
-    console.log("3개의 숫자를 모두 맞히셨습니다.");
-    console.log("-------게임 종료-------\n");
-    count = 0;
-    gameHistory = [];
-    console.log(gameRecord);
+//6. 기록 보는 함수
+function printRecord() {
+  if (gameRecord.length == 0) {
+    console.log("저장된 게임 기록이 없습니다!");
+  } else {
+    console.log("게임 기록");
+    for (let i = 0; i < gameRecord.length; i++) {
+      console.log(
+        `[${gameRecord[i].gameNumber}] / 시작시간 : ${gameRecord[i].startTime} / 종료시간 : ${gameRecord[i].endTime} /  횟수 : ${gameRecord[i].counts}`
+      );
+    }
+  }
+
+  // console.log("확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ");
+  // let printRecordOn = "확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ";
+
+  console.log("확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ");
+  rl.on("line", (answer) => {
+    if (Number(answer) == 0) {
+      console.log("기록보기를 종료합니다!");
+      gameStart();
+    }
+    for (let i = 0; i < gameRecord.length; i++) {
+      if (gameRecord[i].gameNumber == Number(answer)) {
+        console.log(`${answer}번 게임 결과`);
+        for (let j = 0; j < gameRecord[i].history.length; j++) {
+          console.log(gameRecord[i].history[j]);
+        }
+        console.log("3개의 숫자를 모두 맞히셨습니다.");
+        console.log("-------게임 종료-------\n");
+
+        console.log("\n확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ");
+      }
+    }
+  });
+  // rl.on("line", (answer) => {
+  //   if (Number(answer) == 0) {
+  //     console.log("기록보기를 종료합니다!");
+  //     gameStart();
+  //     rl.close();
+  //   } else {
+  //     console.log(`${answer}번 게임 결과`);
+  //     for (let i = 0; i < gameRecord[answer].history.length; i++) {
+  //       console.log(gameRecord[answer].history[i]);                        //게임레코드 안에는 첫번째 게임이 인덱스 0번 이였음.
+  //     }
+  //   }
+  // });
 }
 
 // fin. 게임 시작 함수
 function gameStart() {
-    console.log("게임을 새로 시작하려면 1, 기록을 보려면 2, 종료하려면 9를 입력하세요.");
-    rl.question("", async (answer) => {
-        if (Number(answer) == 1) {
-            await playGame();
-            gameStart();
-        } else if (Number(answer) == 9) {
-            console.log("\n어플리케이션이 종료되었습니다!!");
-            gameId = 0;
-            rl.close();
-        } else {
-            gameStart();
-        }
-    });
+  console.log(
+    "게임을 새로 시작하려면 1, 기록을 보려면 2, 종료하려면 9를 입력하세요."
+  );
+  rl.question("", async (answer) => {
+    if (Number(answer) == 1) {
+      await playGame();
+      gameStart();
+    } else if (Number(answer) == 9) {
+      console.log("\n어플리케이션이 종료되었습니다!!");
+      gameId = 0;
+      rl.close();
+    } else if (Number(answer) == 2) {
+      printRecord();
+    } else {
+      gameStart();
+    }
+  });
 }
 
 gameStart();
+
+// 정철님 새로 알게된 점.
+// 콜백 함수가 while 안에 들어갈시 break가 안먹음.
+// async await, Promiss에 대해 자세히 알게 됨.  = 동기, 비동기 함수에 대해서도 잘 알게됨.
+// push로 객체 넣는 것을 처음 알게 됨.
+
+// 보근님 새로 알게된 점.
+// 콜백 함수가 while 안에 들어갈시 break가 안먹음.
+// async await, Promiss에 대해 자세히 알게 됨.  = 동기, 비동기 함수에 대해서도 잘 알게됨.
+// map함수에 대해서 좀 더 자세히 알게 됨.
