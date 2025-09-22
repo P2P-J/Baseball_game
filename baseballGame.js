@@ -152,13 +152,11 @@ function printRecord() {
     }
   }
 
-  // console.log("확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ");
-  // let printRecordOn = "확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ";
-
   console.log("확인할 게임 번호를 입력하세요 (종료하려면 0을 입력): ");
   rl.on("line", (answer) => {
     if (Number(answer) == 0) {
       console.log("기록보기를 종료합니다!");
+      rl.removeAllListeners("line");
       gameStart();
     }
     for (let i = 0; i < gameRecord.length; i++) {
@@ -174,18 +172,6 @@ function printRecord() {
       }
     }
   });
-  // rl.on("line", (answer) => {
-  //   if (Number(answer) == 0) {
-  //     console.log("기록보기를 종료합니다!");
-  //     gameStart();
-  //     rl.close();
-  //   } else {
-  //     console.log(`${answer}번 게임 결과`);
-  //     for (let i = 0; i < gameRecord[answer].history.length; i++) {
-  //       console.log(gameRecord[answer].history[i]);                        //게임레코드 안에는 첫번째 게임이 인덱스 0번 이였음.
-  //     }
-  //   }
-  // });
 }
 
 // fin. 게임 시작 함수
@@ -215,6 +201,11 @@ gameStart();
 // 콜백 함수가 while 안에 들어갈시 break가 안먹음.
 // async await, Promiss에 대해 자세히 알게 됨.  = 동기, 비동기 함수에 대해서도 잘 알게됨.
 // push로 객체 넣는 것을 처음 알게 됨.
+// readline을 사용할 경우 rl.question은 한번 입력 받고 끝나기 때문에 
+// 함수 내부에서 자동으로 입력이 종료됐을때 리스너도 같이 해제를 시킴
+// 하지만 rl.on의 경우 입력을 여러번 받는 대신 개발자가 입력받기를 종료했을 시 리스너를 해제시켜줘야함
+// 입력이 종료되는 시점에 rl.removeAllListeners("line"); 코드를 추가하여 리스너 등록을 해제해줘야
+// rl.on의 입력값에 따른 출력값이 중복으로 출력되는 것을 방지할 수 있음
 
 // 보근님 새로 알게된 점.
 // 콜백 함수가 while 안에 들어갈시 break가 안먹음.
